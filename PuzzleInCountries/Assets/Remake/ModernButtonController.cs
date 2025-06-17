@@ -8,7 +8,7 @@ namespace StarterAssets
     public class ModernButtonAction
     {
         public GameObject targetObject;
-        public enum ActionType { Move, Scale, Activate }
+        public enum ActionType { Move, Scale, Activate, Rotation }
         public ActionType actionType;
 
         // Hareket ayarları
@@ -22,10 +22,18 @@ namespace StarterAssets
         public float scaleSpeed = 2f;
         public bool resetScaleOnRelease = true;
         
+        // Rotasyon ayarları
+        public Vector3 rotationAxis = Vector3.up;
+        public float rotationAngle = 90f;
+        public float rotationSpeed = 2f;
+        public bool resetRotationOnRelease = true;
+        
         [HideInInspector]
         public Vector3 originalPosition;
         [HideInInspector]
         public Vector3 originalScale;
+        [HideInInspector]
+        public Quaternion originalRotation;
     }
 
     public class ModernButtonController : MonoBehaviour
@@ -72,6 +80,7 @@ namespace StarterAssets
                 {
                     action.originalPosition = action.targetObject.transform.position;
                     action.originalScale = action.targetObject.transform.localScale;
+                    action.originalRotation = action.targetObject.transform.rotation;
                 }
             }
         }
@@ -247,6 +256,9 @@ namespace StarterAssets
                             action.targetObject.SetActive(!action.targetObject.activeSelf);
                         }
                         break;
+                    case ModernButtonAction.ActionType.Rotation:
+                        StartCoroutine(RotateObject(action, isPressing));
+                        break;
                 }
             }
         }
@@ -319,6 +331,38 @@ namespace StarterAssets
             }
             
             action.targetObject.transform.localScale = targetScale;
+        }
+
+        private IEnumerator RotateObject(ModernButtonAction action, bool rotateUp)
+        {
+            Quaternion startRot = action.targetObject.transform.rotation;
+            Quaternion targetRot;
+            if (rotateUp)
+            {
+                targetRot = action.originalRotation * Quaternion.AngleAxis(action.rotationAngle, action.rotationAxis.normalized);
+                Debug.Log($"[{gameObject.name}] RotateObject UP - Target: {action.targetObject.name}, From: {startRot}, To: {targetRot.eulerAngles}");
+            }
+            else
+            {
+                if (action.resetRotationOnRelease)
+                {
+                    targetRot = action.originalRotation;
+                    Debug.Log($"[{gameObject.name}] RotateObject DOWN - Target: {action.targetObject.name}, From: {startRot}, To: {targetRot.eulerAngles}");
+                }
+                else
+                {
+                    Debug.Log($"[{gameObject.name}] RotateObject DOWN - resetRotationOnRelease false, çıkılıyor");
+                    yield break;
+                }
+            }
+            float t = 0;
+            while (t < 1)
+            {
+                t += Time.deltaTime * action.rotationSpeed;
+                action.targetObject.transform.rotation = Quaternion.Slerp(startRot, targetRot, t);
+                yield return null;
+            }
+            action.targetObject.transform.rotation = targetRot;
         }
 
         private void OnDrawGizmosSelected()
