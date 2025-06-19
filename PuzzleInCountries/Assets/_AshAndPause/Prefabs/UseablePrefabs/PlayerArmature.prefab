@@ -1881,7 +1881,7 @@ MonoBehaviour:
     m_Bits: 128
   LandingAudioClip: {fileID: 8300000, guid: 72f526a6a9890f643a88e85a61c86c8a, type: 3}
   FootstepAudioClips:
-  - {fileID: 8300000, guid: 72f526a6a9890f643a88e85a61c86c8a, type: 3}
+  - {fileID: 8300000, guid: 85016e0f2b01da248b9663dd49a161b0, type: 3}
   FootstepAudioVolume: 1
   CloneCreateSound: {fileID: 8300000, guid: ee7feb159324b0b4cb179529bae6b65c, type: 3}
   RewindSound: {fileID: 8300000, guid: 3fc820ef5cdb74742b4704c9d4442d64, type: 3}
